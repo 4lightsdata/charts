@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChatGDP Nowcast · 4 Lights</title>
+  <title>ChatGDP · 4 Lights</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -11,131 +12,88 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #ffffff;
       color: #1a1a18;
-      padding: 2rem 2rem 3rem;
+      padding: 1.5rem 1.75rem 2.5rem;
       max-width: 860px;
       margin: 0 auto;
     }
 
-    @media (prefers-color-scheme: dark) {
-      body { background: #1a1a18; color: #d3d1c7; }
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      margin-bottom: 3px;
     }
 
-    /* Header */
-    .page-header { margin-bottom: 1.5rem; }
-    .page-title { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
-    .page-subtitle { font-size: 14px; color: #5f5e5a; line-height: 1.5; }
-    @media (prefers-color-scheme: dark) { .page-subtitle { color: #888780; } }
-
-    .quarter-badge {
-      display: inline-block;
-      font-size: 12px;
-      background: #f1efe8;
-      color: #5f5e5a;
-      border-radius: 5px;
-      padding: 2px 8px;
-      margin-left: 10px;
-      vertical-align: middle;
-      font-weight: 400;
-    }
-    @media (prefers-color-scheme: dark) {
-      .quarter-badge { background: #2c2c2a; color: #888780; }
+    .subtitle {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
     }
 
-    /* Stat cards */
     .stat-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 1.5rem;
-    }
-    .stat-card {
-      background: #f1efe8;
-      border-radius: 8px;
-      padding: 14px 18px;
-    }
-    @media (prefers-color-scheme: dark) { .stat-card { background: #2c2c2a; } }
-    .stat-label { font-size: 12px; color: #888780; margin-bottom: 4px; }
-    .stat-value { font-size: 22px; font-weight: 500; }
-    .stat-sub { font-size: 11px; color: #b4b2a9; margin-top: 2px; }
-
-    /* Legend */
-    .legend {
       display: flex;
-      gap: 20px;
-      margin-bottom: 10px;
-      font-size: 12px;
-      color: #888780;
-      align-items: center;
-      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 1.25rem;
     }
-    .legend-item { display: flex; align-items: center; gap: 6px; }
 
-    /* Chart */
-    .chart-wrap { position: relative; width: 100%; height: 320px; }
+    .stat-card {
+      background: #f0ede4;
+      border-radius: 6px;
+      padding: 10px 14px 12px;
+      min-width: 160px;
+    }
 
-    /* Footer */
-    .chart-footer {
+    .stat-card.range { background: #fdf5d8; }
+
+    .stat-label {
       font-size: 11px;
-      color: #b4b2a9;
-      margin-top: 12px;
+      color: #888;
+      margin-bottom: 3px;
     }
-    .chart-footer a { color: #b4b2a9; }
 
-    /* Error / loading */
-    .msg { font-size: 14px; color: #888780; padding: 2rem 0; text-align: center; }
+    .stat-value {
+      font-size: 26px;
+      font-weight: 600;
+      color: #1a1a18;
+      line-height: 1.1;
+    }
+
+    .stat-card.range .stat-value { font-size: 20px; padding-top: 4px; }
+
+    .stat-sub {
+      font-size: 11px;
+      color: #999;
+      margin-top: 3px;
+    }
+
+    .chart-wrap { position: relative; width: 100%; height: 340px; }
+
+    .chart-footer { font-size: 11px; color: #bbb; margin-top: 10px; }
+    .chart-footer a { color: #bbb; }
+    .msg { font-size: 14px; color: #999; padding: 2rem 0; text-align: center; }
   </style>
 </head>
 <body>
 
-  <div class="page-header">
-    <h1 class="page-title">
-      ChatGDP nowcast
-      <span class="quarter-badge" id="quarter-badge"></span>
-    </h1>
-    <p class="page-subtitle">
-      AI (Gemini) daily estimate of current-quarter U.S. real GDP growth &middot; annualized SAAR (%)
-    </p>
-  </div>
+  <h1>ChatGDP</h1>
+  <p class="subtitle">AI (Gemini) powered daily estimate of current-quarter U.S. real GDP growth</p>
 
   <div class="stat-row">
     <div class="stat-card">
-      <div class="stat-label">Latest nowcast</div>
+      <div class="stat-label">latest nowcast</div>
       <div class="stat-value" id="stat-latest">—</div>
-      <div class="stat-sub">3-day moving avg</div>
+      <div class="stat-sub">3-day moving average</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Forecast range</div>
-      <div class="stat-value" id="stat-range" style="font-size:17px; padding-top:3px;">—</div>
-      <div class="stat-sub">most recent</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">As of</div>
-      <div class="stat-value" id="stat-date" style="font-size:16px; padding-top:4px;">—</div>
-      <div class="stat-sub">&nbsp;</div>
-    </div>
-  </div>
-
-  <div class="legend">
-    <div class="legend-item">
-      <svg width="20" height="12" aria-hidden="true"><line x1="0" y1="6" x2="20" y2="6" stroke="#378ADD" stroke-width="2"/></svg>
-      <span>Nowcast (3-day MA)</span>
-    </div>
-    <div class="legend-item">
-      <svg width="20" height="12" aria-hidden="true"><rect x="0" y="2" width="20" height="8" fill="#378ADD" opacity="0.18" rx="2"/></svg>
-      <span>Forecast range</span>
-    </div>
-    <div class="legend-item">
-      <svg width="20" height="12" aria-hidden="true"><line x1="0" y1="6" x2="20" y2="6" stroke="#888780" stroke-width="1" stroke-dasharray="3,3"/></svg>
-      <span>Zero growth</span>
+    <div class="stat-card range">
+      <div class="stat-label">forecast range</div>
+      <div class="stat-value" id="stat-range">—</div>
+      <div class="stat-sub" id="stat-date">&nbsp;</div>
     </div>
   </div>
 
   <div class="chart-wrap">
-    <canvas id="gdpChart"
-      role="img"
-      aria-label="Line chart of ChatGDP 3-day moving average GDP nowcast with high and low forecast range band">
-      Loading chart data...
-    </canvas>
+    <canvas id="gdpChart" role="img" aria-label="ChatGDP 3-day moving average nowcast with forecast range band">Loading...</canvas>
   </div>
 
   <p class="chart-footer">
@@ -149,127 +107,92 @@
 
     function parseVal(s) {
       if (!s) return null;
-      return parseFloat(s.replace(/[+%\s]/g, ''));
+      const v = parseFloat(s.replace(/[+%\s]/g, ''));
+      return isNaN(v) ? null : v;
     }
 
     function fmtDate(s) {
       if (!s) return s;
-      const parts = s.split('-');
-      if (parts.length !== 3) return s;
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const m = parseInt(parts[0], 10);
-      const d = parseInt(parts[1], 10);
-      return months[m - 1] + ' ' + d;
+      const p = s.trim().split('-');
+      if (p.length !== 3) return s;
+      const m = parseInt(p[0], 10), d = parseInt(p[1], 10), y = p[2].trim();
+      if (isNaN(m) || isNaN(d)) return s;
+      return m + '/' + d + '/' + y;
+    }
+
+    function fmtVal(v) {
+      if (v === null) return '—';
+      return (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+    }
+
+    function parseCSVLine(line) {
+      const result = []; let cur = '', inQ = false;
+      for (const ch of line) {
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { result.push(cur.trim()); cur = ''; }
+        else { cur += ch; }
+      }
+      result.push(cur.trim());
+      return result;
     }
 
     async function init() {
       const canvas = document.getElementById('gdpChart');
       try {
         const res = await fetch(CSV);
-        if (!res.ok) throw new Error('fetch failed: ' + res.status);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const text = await res.text();
-
         const lines = text.trim().split('\n').filter(l => l.trim());
         const rows = lines.slice(1).map(l => {
-          const c = l.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
-          return {
-            quarter: c[0],
-            date:    c[1],
-            gdp:     parseVal(c[2]),
-            low:     parseVal(c[3]),
-            high:    parseVal(c[4])
-          };
+          const c = parseCSVLine(l);
+          return { quarter: c[0], date: c[1], gdp: parseVal(c[2]), low: parseVal(c[3]), high: parseVal(c[4]) };
         }).filter(r => r.date && r.gdp !== null);
 
-        if (rows.length === 0) throw new Error('No data rows found');
+        if (!rows.length) throw new Error('No data');
+
+        const last = rows[rows.length - 1];
+        document.getElementById('stat-latest').textContent = fmtVal(last.gdp);
+        document.getElementById('stat-range').textContent  = fmtVal(last.low) + ' to ' + fmtVal(last.high);
+        document.getElementById('stat-date').textContent   = 'as of ' + fmtDate(last.date);
 
         const labels   = rows.map(r => fmtDate(r.date));
         const gdpVals  = rows.map(r => r.gdp);
         const lowVals  = rows.map(r => r.low);
         const highVals = rows.map(r => r.high);
-        const last     = rows[rows.length - 1];
 
-        document.getElementById('stat-latest').textContent  = last.gdp.toFixed(1) + '%';
-        document.getElementById('stat-range').textContent   = last.low.toFixed(1) + '% – ' + last.high.toFixed(1) + '%';
-        document.getElementById('stat-date').textContent    = fmtDate(last.date);
-        document.getElementById('quarter-badge').textContent = last.quarter;
-
-        // Quarter boundary lines
         const quarterChanges = [];
         let prevQ = null;
-        rows.forEach((r, i) => {
-          if (r.quarter !== prevQ && prevQ !== null) quarterChanges.push(i);
-          prevQ = r.quarter;
-        });
-
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const gridColor  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-        const textColor  = isDark ? '#b4b2a9' : '#5f5e5a';
-        const ttBg       = isDark ? '#2c2c2a' : '#ffffff';
-        const ttBorder   = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)';
+        rows.forEach((r, i) => { if (r.quarter !== prevQ && prevQ !== null) quarterChanges.push(i); prevQ = r.quarter; });
 
         new Chart(canvas, {
           type: 'line',
           data: {
             labels,
             datasets: [
-              {
-                label: 'High',
-                data: highVals,
-                borderColor: 'transparent',
-                backgroundColor: 'rgba(55,138,221,0.13)',
-                fill: '+1',
-                pointRadius: 0,
-                tension: 0.35,
-                order: 3
-              },
-              {
-                label: 'Low',
-                data: lowVals,
-                borderColor: 'transparent',
-                backgroundColor: 'rgba(55,138,221,0.13)',
-                fill: false,
-                pointRadius: 0,
-                tension: 0.35,
-                order: 3
-              },
-              {
-                label: 'Nowcast',
-                data: gdpVals,
-                borderColor: '#378ADD',
-                backgroundColor: 'transparent',
-                borderWidth: 2.5,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: '#378ADD',
-                pointHoverBorderColor: '#ffffff',
-                pointHoverBorderWidth: 2,
-                tension: 0.35,
-                order: 1
-              }
+              { label: 'High', data: highVals, borderColor: 'transparent', backgroundColor: 'rgba(240,210,100,0.35)', fill: '+1', pointRadius: 0, tension: 0.3, order: 3 },
+              { label: 'Low',  data: lowVals,  borderColor: 'transparent', backgroundColor: 'transparent', fill: false, pointRadius: 0, tension: 0.3, order: 3 },
+              { label: 'Nowcast', data: gdpVals, borderColor: '#1a1a18', backgroundColor: 'transparent', borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, pointHoverBackgroundColor: '#1a1a18', pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2, tension: 0.3, order: 1 }
             ]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
+            layout: { padding: { top: 10 } },
             plugins: {
               legend: { display: false },
               tooltip: {
-                backgroundColor: ttBg,
-                borderColor: ttBorder,
+                backgroundColor: '#fff',
+                borderColor: 'rgba(0,0,0,0.1)',
                 borderWidth: 1,
-                titleColor: textColor,
-                bodyColor: textColor,
+                titleColor: '#333',
+                bodyColor: '#555',
                 padding: 10,
                 callbacks: {
-                  title: items => {
-                    const r = rows[items[0].dataIndex];
-                    return r.quarter + '  ·  ' + fmtDate(r.date);
-                  },
+                  title: items => fmtDate(rows[items[0].dataIndex].date) + '  ·  ' + rows[items[0].dataIndex].quarter,
                   label: ctx => {
-                    if (ctx.dataset.label === 'Nowcast') return '  Nowcast: ' + ctx.parsed.y.toFixed(1) + '%';
-                    if (ctx.dataset.label === 'High')    return '  Range: ' + lowVals[ctx.dataIndex].toFixed(1) + '% – ' + ctx.parsed.y.toFixed(1) + '%';
+                    if (ctx.dataset.label === 'Nowcast') return '  Nowcast: ' + fmtVal(ctx.parsed.y);
+                    if (ctx.dataset.label === 'High')    return '  Range: ' + fmtVal(lowVals[ctx.dataIndex]) + ' to ' + fmtVal(ctx.parsed.y);
                     return null;
                   },
                   filter: ctx => ctx.dataset.label !== 'Low'
@@ -278,14 +201,15 @@
             },
             scales: {
               x: {
-                grid:   { color: gridColor },
-                ticks:  { color: textColor, font: { size: 11 }, maxTicksLimit: 10, maxRotation: 0 },
-                border: { color: gridColor }
+                grid:   { display: false },
+                border: { color: '#ccc', width: 1 },
+                ticks:  { color: '#666', font: { size: 11 }, maxTicksLimit: 8, maxRotation: 0 }
               },
               y: {
-                grid:   { color: gridColor },
-                ticks:  { color: textColor, font: { size: 11 }, callback: v => v.toFixed(1) + '%' },
-                border: { color: gridColor }
+                position: 'right',
+                grid:     { color: 'rgba(0,0,0,0.05)' },
+                border:   { display: false },
+                ticks:    { color: '#666', font: { size: 11 }, callback: v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%' }
               }
             }
           },
@@ -298,8 +222,7 @@
                 if (yPos < y.top || yPos > y.bottom) return;
                 ctx.save();
                 ctx.beginPath();
-                ctx.setLineDash([4, 4]);
-                ctx.strokeStyle = isDark ? 'rgba(180,180,180,0.25)' : 'rgba(100,100,100,0.2)';
+                ctx.strokeStyle = 'rgba(0,0,0,0.3)';
                 ctx.lineWidth = 1;
                 ctx.moveTo(x.left, yPos);
                 ctx.lineTo(x.right, yPos);
@@ -315,8 +238,8 @@
                   const xPos = x.getPixelForValue(idx);
                   ctx.save();
                   ctx.beginPath();
-                  ctx.setLineDash([2, 3]);
-                  ctx.strokeStyle = isDark ? 'rgba(180,180,180,0.2)' : 'rgba(100,100,100,0.15)';
+                  ctx.setLineDash([2, 4]);
+                  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
                   ctx.lineWidth = 1;
                   ctx.moveTo(xPos, y.top);
                   ctx.lineTo(xPos, y.bottom);
@@ -329,7 +252,7 @@
         });
 
       } catch(e) {
-        canvas.outerHTML = '<p class="msg">Could not load data. <a href="' + CSV + '">View source data</a><br><small style="color:#b4b2a9">' + e.message + '</small></p>';
+        canvas.outerHTML = '<p class="msg">Could not load data — <a href="' + CSV + '">view source</a><br><small>' + e.message + '</small></p>';
       }
     }
 
