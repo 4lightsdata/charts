@@ -74,7 +74,7 @@ function renderCard(card, container) {
   const isDown = card.changeVal <= 0;
   const arrow = isDown ? '↓' : '↑';
   const changeColor = isDown ? '#2a9d2a' : '#cc2222';
-  const changeDisplay = `${arrow} ${Math.abs(card.changeVal).toFixed(2)} (${card.periodLabel})`;
+  const changeDisplay = `${arrow} ${Math.abs(card.changeVal).toFixed(2)}`;
   const pct = Math.min(100, Math.max(0, card.percentile));
   const sparkSVG = buildSparklineSVG(card.sparkValues);
 
@@ -88,8 +88,9 @@ function renderCard(card, container) {
         grid-template-columns: 90px 1fr 130px;
         grid-template-rows: auto auto;
         align-items: center;
+        box-sizing: border-box;
         box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-        width: 520px;
+        width: 100%;
         font-family: Arial, sans-serif;
       }
       .sc-left { display: flex; flex-direction: column; justify-content: center; }
