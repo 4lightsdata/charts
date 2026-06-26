@@ -83,9 +83,9 @@ function renderCard(card, container) {
       .sc-card {
         background: #F7F7F7;
         border-radius: 12px;
-        padding: 12px 16px 8px 16px;
+        padding: 8px 12px 6px 12px;
         display: grid;
-        grid-template-columns: 90px 1fr 130px;
+        grid-template-columns: 80px 1fr 120px;
         grid-template-rows: auto auto;
         align-items: center;
         box-sizing: border-box;
@@ -96,7 +96,7 @@ function renderCard(card, container) {
       .sc-left { display: flex; flex-direction: column; justify-content: center; }
       .sc-level { font-size: 1.4rem; font-weight: 400; line-height: 1; color: #111; }
       .sc-change { font-size: 0.9rem; font-weight: 500; margin-top: 2px; }
-      .sc-sparkline { padding: 0 8px; }
+      .sc-sparkline { padding: 0 4px; }
       .sc-sparkline svg { display: block; width: 100%; height: 60px; }
       .sc-range { position: relative; height: 60px; display: flex; flex-direction: column; justify-content: center; }
       .sc-range-max { font-size: 0.7rem; color: #555; text-align: right; margin-bottom: 2px; }
