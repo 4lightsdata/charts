@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stress Indicator Cards</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 12px 16px 8px 16px;
+    display: grid;
+    grid-template-columns: 90px 1fr 120px;
+    grid-template-rows: auto auto;
+    align-items: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    width: 520px;
+    position: relative;
+  }
+
+  /* Left column */
+  .left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .level {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1;
+    color: #111;
+  }
+  .change {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .change.down { color: #2a9d2a; }
+  .change.up   { color: #cc2222; }
+
+  /* Center sparkline */
+  .sparkline-wrap {
+    padding: 0 8px;
+  }
+  .sparkline-wrap svg {
+    display: block;
+    width: 100%;
+    height: 60px;
+  }
+
+  /* Right range indicator */
+  .range {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    height: 60px;
+    justify-content: center;
+  }
+  .range-line-wrap {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .range-line {
+    width: 100%;
+    height: 2px;
+    background: #ccc;
+    border-top: 2px dashed #999;
+    background: none;
+  }
+  .range-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #111;
+    border-radius: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .range-labels {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #555;
+    margin-top: 4px;
+  }
+  .range-max-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.7rem;
+    color: #555;
+  }
+
+  /* Bottom label */
+  .card-label {
+    grid-column: 1 / 4;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #666;
+    font-style: italic;
+    padding-top: 4px;
+    border-top: 1px solid #eee;
+    margin-top: 4px;
+  }
+
+  .loading { color: #888; font-style: italic; }
+  .error   { color: red; }
+</style>
+</head>
+<body>
+
+<div id="cards-container">
+  <p class="loading">Loading data...</p>
+</div>
+
+<script>
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTyHCIpuggmnT48JhvbjLixeB_-VOEaWNkBUDssKIyM_JFPz52tiN_aUi-4UBOvGo9sPbwdvJ-7XSuZ/pub?gid=1860034981&single=true&output=csv';
+
+async function fetchData() {
+  const resp = await fetch(CSV_URL);
+  const text = await resp.text();
+  return parseCSV(text);
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n').map(l => l.split(','));
+  const header = lines[0];
+
+  // Find column indices
+  const col = name => header.findIndex(h => h.trim() === name.trim());
+  const idxCardID     = col('CardID');
+  const idxLabel      = col('Label');
+  const idxUnit       = col('Unit');
+  const idxLevel      = col('Level');
+  const idxChangeVal  = col('ChangeVal');
+  const idxPeriodLabel= col('PeriodLabel');
+  const idxHistMin    = col('HistMin');
+  const idxHistMax    = col('HistMax');
+  const idxPercentile = col('Percentile');
+
+  // Sparkline values start after the blank column (after Percentile)
+  // blank column = idxPercentile + 1, dates header row = idxPercentile + 2... 
+  // but dates are in header row; values start at idxPercentile + 2 (skip blank)
+  const sparkStart = idxPercentile + 2; // skip blank col
+
+  const cards = [];
+  for (let i = 1; i < lines.length; i++) {
+    const row = lines[i];
+    if (!row[idxCardID] || row[idxCardID].trim() === '') continue;
+
+    const sparkValues = row.slice(sparkStart)
+      .map(v => parseFloat(v.trim()))
+      .filter(v => !isNaN(v));
+
+    cards.push({
+      cardID:      row[idxCardID].trim(),
+      label:       row[idxLabel].trim(),
+      unit:        row[idxUnit].trim(),
+      level:       parseFloat(row[idxLevel]),
+      changeVal:   parseFloat(row[idxChangeVal]),
+      periodLabel: row[idxPeriodLabel].trim(),
+      histMin:     parseFloat(row[idxHistMin]),
+      histMax:     parseFloat(row[idxHistMax]),
+      percentile:  parseFloat(row[idxPercentile]),
+      sparkValues
+    });
+  }
+  return cards;
+}
+
+function buildSparklineSVG(values) {
+  if (!values.length) return '<svg></svg>';
+  const w = 200, h = 60, pad = 4;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const pts = values.map((v, i) => {
+    const x = pad + (i / (values.length - 1)) * (w - pad * 2);
+    const y = (h - pad) - ((v - min) / range) * (h - pad * 2);
+    return `${x},${y}`;
+  });
+  const polyline = pts.join(' ');
+  const areaClose = `${pts[pts.length-1].split(',')[0]},${h} ${pad},${h}`;
+
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2a9d2a" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="#2a9d2a" stop-opacity="0.05"/>
+      </linearGradient>
+    </defs>
+    <polygon points="${polyline} ${areaClose}" fill="url(#sg)"/>
+    <polyline points="${polyline}" fill="none" stroke="#2a9d2a" stroke-width="1.5"/>
+  </svg>`;
+}
+
+function buildCard(card) {
+  const isDown = card.changeVal <= 0;
+  const changeClass = isDown ? 'down' : 'up';
+  const arrow = isDown ? '↓' : '↑';
+  const changeDisplay = `${arrow} ${Math.abs(card.changeVal).toFixed(2)} (${card.periodLabel})`;
+
+  // Dot position as % along the range line
+  const pct = Math.min(100, Math.max(0, card.percentile));
+
+  const sparkSVG = buildSparklineSVG(card.sparkValues);
+
+  return `
+  <div class="card">
+    <div class="left">
+      <div class="level">${card.level}</div>
+      <div class="change ${changeClass}">${changeDisplay}</div>
+    </div>
+    <div class="sparkline-wrap">${sparkSVG}</div>
+    <div class="range">
+      <div class="range-max-label">${card.histMax}</div>
+      <div class="range-line-wrap">
+        <div class="range-line"></div>
+        <div class="range-dot" style="left: ${pct}%"></div>
+      </div>
+      <div class="range-labels">
+        <span>${card.histMin}</span>
+      </div>
+    </div>
+    <div class="card-label">${card.label}</div>
+  </div>`;
+}
+
+fetchData()
+  .then(cards => {
+    const container = document.getElementById('cards-container');
+    container.innerHTML = cards.map(buildCard).join('');
+  })
+  .catch(err => {
+    document.getElementById('cards-container').innerHTML = `<p class="error">Error loading data: ${err.message}</p>`;
+  });
+</script>
+</body>
+</html>
