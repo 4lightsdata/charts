@@ -88,19 +88,19 @@ function renderCard(card, container) {
         grid-template-columns: 90px 1fr 130px;
         grid-template-rows: auto auto;
         align-items: center;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
         width: 520px;
         font-family: Arial, sans-serif;
       }
       .sc-left { display: flex; flex-direction: column; justify-content: center; }
-      .sc-level { font-size: 2rem; font-weight: 600; line-height: 1; color: #111; }
+      .sc-level { font-size: 1.4rem; font-weight: 400; line-height: 1; color: #111; }
       .sc-change { font-size: 0.9rem; font-weight: 500; margin-top: 2px; }
       .sc-sparkline { padding: 0 8px; }
       .sc-sparkline svg { display: block; width: 100%; height: 60px; }
       .sc-range { position: relative; height: 60px; display: flex; flex-direction: column; justify-content: center; }
       .sc-range-max { font-size: 0.7rem; color: #555; text-align: right; margin-bottom: 2px; }
       .sc-range-line-wrap { position: relative; display: flex; align-items: center; }
-      .sc-range-line { width: 100%; border-top: 2px dashed #999; }
+      .sc-range-line { width: 100%; border-top: 2px solid #999; }
       .sc-range-dot {
         position: absolute;
         width: 10px; height: 10px;
@@ -117,7 +117,6 @@ function renderCard(card, container) {
         color: #666;
         font-style: italic;
         padding-top: 5px;
-        border-top: 1px solid #e0e0e0;
         margin-top: 4px;
       }
     </style>
