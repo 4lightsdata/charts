@@ -18,25 +18,23 @@
     style.textContent = `
       .sc-card {
         background: #fff;
-        border-radius: 22px;
-        padding: 14px 18px 10px 18px;
+        border-radius: 999px;
+        padding: 18px 32px 14px 32px;
         display: grid;
         grid-template-columns: minmax(100px, 130px) 1fr minmax(84px, 120px);
         grid-template-rows: auto auto;
         align-items: center;
-        box-shadow: 0 2px 14px rgba(17,19,24,0.06);
         width: 100%;
         max-width: 520px;
         box-sizing: border-box;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         position: relative;
       }
-      .sc-left { display:flex; align-items:center; min-width:0; }
-      .sc-pill { display:inline-flex; align-items:center; gap:8px; background:${PILL_BG}; border-radius:999px; padding:6px 12px 6px 6px; max-width:100%; }
-      .sc-pill-dot { width:22px; height:22px; border-radius:50%; background:${INK}; flex-shrink:0; }
-      .sc-pill-dot.down { background:${GREEN}; }
-      .sc-pill-dot.up { background:${RED}; }
-      .sc-pill-text { display:flex; flex-direction:column; line-height:1.15; min-width:0; }
+      .sc-left { display:flex; align-items:center; gap:8px; min-width:0; }
+      .sc-dot { width:14px; height:14px; border-radius:50%; background:${INK}; flex-shrink:0; }
+      .sc-dot.down { background:${GREEN}; }
+      .sc-dot.up { background:${RED}; }
+      .sc-text { display:flex; flex-direction:column; line-height:1.15; min-width:0; }
       .sc-level { font-size:1.05rem; font-weight:700; color:${INK}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
       .sc-change { font-size:0.85rem; font-weight:600; white-space:nowrap; }
       .sc-change.down { color:${GREEN}; }
@@ -51,12 +49,12 @@
       .sc-range-dot.down { background:${GREEN}; box-shadow:0 0 0 3px rgba(8,153,129,0.15); }
       .sc-range-dot.up { background:${RED}; box-shadow:0 0 0 3px rgba(242,54,69,0.15); }
       .sc-range-labels { width:100%; display:flex; justify-content:space-between; font-size:0.7rem; color:${MUTED}; margin-top:4px; }
-      .sc-range-max-label { position:absolute; top:-2px; right:0; font-size:0.7rem; color:${MUTED}; }
+      .sc-range-max-label { position:absolute; top:2px; right:4px; font-size:0.7rem; color:${MUTED}; }
       .sc-label { grid-column:1/4; text-align:center; font-size:0.7rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:${MUTED}; padding-top:8px; border-top:1px solid #f0f1f3; margin-top:6px; }
       .sc-note { grid-column:1/4; text-align:center; font-size:0.8rem; color:${MUTED}; padding:16px 4px; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
       .sc-cards-wrap { display:flex; flex-direction:column; gap:14px; }
       @media (max-width: 480px) {
-        .sc-card { grid-template-columns: 92px 1fr 80px; padding:10px 12px 8px 12px; }
+        .sc-card { grid-template-columns: 92px 1fr 80px; padding:14px 22px 10px 22px; }
         .sc-level { font-size:0.95rem; }
       }
     `;
@@ -221,12 +219,10 @@
     return `
     <div class="sc-card">
       <div class="sc-left">
-        <div class="sc-pill">
-          <div class="sc-pill-dot ${changeClass}"></div>
-          <div class="sc-pill-text">
-            <div class="sc-level">${fmtPlain(card.level)}</div>
-            <div class="sc-change ${changeClass}">${changeDisplay}</div>
-          </div>
+        <div class="sc-dot ${changeClass}"></div>
+        <div class="sc-text">
+          <div class="sc-level">${fmtPlain(card.level)}</div>
+          <div class="sc-change ${changeClass}">${changeDisplay}</div>
         </div>
       </div>
       <div class="sc-sparkline">${sparkSVG}</div>
