@@ -28,6 +28,7 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        overflow: hidden;
       }
       .sc-title {
         text-align: left;
@@ -43,6 +44,7 @@
         grid-template-columns: 25% 35% 40%;
         column-gap: 14px;
         align-items: start;
+        min-width: 0;
       }
       .sc-col { min-width: 0; box-sizing: border-box; max-width: 100%; }
 
