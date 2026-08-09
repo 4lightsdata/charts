@@ -66,14 +66,12 @@
       .sc-range-max { width: 100%; text-align: right; font-size: 0.68rem; color: ${MUTED}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .sc-range-min { width: 100%; text-align: left; font-size: 0.68rem; color: ${MUTED}; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .sc-range-line-wrap { position: relative; width: 100%; display: flex; align-items: center; height: 14px; margin: 6px 0; }
-      .sc-range-line { width: 100%; height: 0; border-top: 2px solid #000; }
+      .sc-range-line { width: 100%; height: 0; border-top: 1px solid #000; }
       .sc-range-dot {
         position: absolute; width: 11px; height: 11px; border-radius: 50%;
-        top: 50%; transform: translate(-50%, -50%); background: ${INK};
+        top: 50%; transform: translate(-50%, -50%); background: #000;
         box-shadow: 0 0 0 3px rgba(17,19,24,0.08);
       }
-      .sc-range-dot.up   { background: ${RED};   box-shadow: 0 0 0 3px rgba(242,54,69,0.15); }
-      .sc-range-dot.down { background: ${GREEN}; box-shadow: 0 0 0 3px rgba(8,153,129,0.15); }
       .sc-slider-label { font-size: 0.68rem; color: ${MUTED}; text-align: center; margin-top: 4px; overflow-wrap: break-word; }
 
       .sc-note { text-align: center; font-size: 0.8rem; color: ${MUTED}; padding: 16px 4px; }
