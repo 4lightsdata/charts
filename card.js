@@ -65,8 +65,8 @@
 
       /* right: range slider */
       .sc-col-range { display: flex; flex-direction: column; align-items: center; }
-      .sc-range-max { width: 100%; text-align: right; font-size: 0.68rem; color: ${MUTED}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-      .sc-range-min { width: 100%; text-align: left; font-size: 0.68rem; color: ${MUTED}; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .sc-range-max { width: 100%; text-align: right; font-size: 0.68rem; color: ${MUTED}; overflow-wrap: break-word; }
+      .sc-range-min { width: 100%; text-align: left; font-size: 0.68rem; color: ${MUTED}; margin-top: 2px; overflow-wrap: break-word; }
       .sc-range-line-wrap { position: relative; width: 100%; display: flex; align-items: center; height: 14px; margin: 6px 0; }
       .sc-range-line { width: 100%; height: 0; border-top: 1px solid #000; }
       .sc-range-dot {
