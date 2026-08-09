@@ -51,12 +51,13 @@
       /* left: level / change */
       .sc-col-left { grid-column: 1; display: flex; align-items: flex-start; }
       .sc-text { display: flex; flex-direction: column; min-width: 0; }
-      .sc-level { font-size: 1.05rem; font-weight: normal; color: ${INK}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sc-level { font-size: 1.5rem; font-weight: normal; color: ${INK}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sc-change { font-size: 0.85rem; font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sc-change.up   { color: ${RED}; }
       .sc-change.down { color: ${GREEN}; }
       .sc-change.flat { color: ${INK}; }
       .sc-period { font-size: 0.7rem; color: ${MUTED}; margin-top: 2px; }
+      .sc-change-label { font-size: 0.68rem; color: ${MUTED}; margin-top: 4px; overflow-wrap: break-word; }
 
       /* middle: sparkline */
       .sc-col-graph { grid-column: 3; display: flex; flex-direction: column; }
@@ -65,8 +66,8 @@
 
       /* right: range slider */
       .sc-col-range { grid-column: 5; display: flex; flex-direction: column; align-items: center; }
-      .sc-range-max { width: 100%; text-align: right; font-size: 0.68rem; color: ${MUTED}; overflow-wrap: break-word; }
-      .sc-range-min { width: 100%; text-align: left; font-size: 0.68rem; color: ${MUTED}; margin-top: 2px; overflow-wrap: break-word; }
+      .sc-range-max { width: 100%; text-align: right; font-size: 0.68rem; color: ${INK}; overflow-wrap: break-word; }
+      .sc-range-min { width: 100%; text-align: left; font-size: 0.68rem; color: ${INK}; margin-top: 2px; overflow-wrap: break-word; }
       .sc-range-line-wrap { position: relative; width: 100%; display: flex; align-items: center; height: 14px; margin: 6px 0; }
       .sc-range-line { width: 100%; height: 0; border-top: 1px solid #000; }
       .sc-range-dot {
@@ -173,6 +174,7 @@
       changeDisplay:   col('ChangeDisplay'),
       changeVal:       col('ChangeVal'),
       periodLabel:     col('PeriodLabel'),
+      changeLabel:     col('ChangeLabel'),
       trendColor:      col('TrendColor'),
       trendLabel:      col('TrendLabel'),
       histMinDisplay:  col('HistMinDisplay'),
@@ -207,6 +209,7 @@
         changeDisplay:    get('changeDisplay'),
         changeVal:        getNum('changeVal'),
         periodLabel:      get('periodLabel'),
+        changeLabel:      get('changeLabel'),
         trendColor:       getNum('trendColor'),
         trendLabel:       get('trendLabel'),
         histMinDisplay:   get('histMinDisplay'),
@@ -289,6 +292,7 @@
             <div class="sc-level">${esc(card.levelDisplay)}</div>
             <div class="sc-change ${changeState}">${esc(card.changeDisplay)}</div>
             <div class="sc-period">${esc(card.periodLabel)}</div>
+            <div class="sc-change-label">${esc(card.changeLabel)}</div>
           </div>
         </div>
         <div class="sc-col sc-col-graph">
