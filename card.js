@@ -16,6 +16,7 @@
     const style = document.createElement('style');
     style.id = 'stress-card-styles';
     style.textContent = `
+      html, body { max-width: 100%; overflow-x: hidden; }
       .sc-card {
         background: ${CARD_BG};
         border-radius: 28px;
@@ -29,9 +30,10 @@
         gap: 12px;
       }
       .sc-title {
-        text-align: center;
+        text-align: left;
+        text-transform: uppercase;
         font-size: 0.8rem;
-        font-weight: 700;
+        font-weight: normal;
         letter-spacing: 0.02em;
         color: ${INK};
         overflow-wrap: break-word;
@@ -42,16 +44,13 @@
         column-gap: 14px;
         align-items: start;
       }
-      .sc-col { min-width: 0; overflow: hidden; box-sizing: border-box; }
+      .sc-col { min-width: 0; overflow: hidden; box-sizing: border-box; max-width: 100%; }
 
       /* left: level / change */
-      .sc-col-left { display: flex; align-items: flex-start; gap: 8px; }
-      .sc-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; background: ${INK}; }
-      .sc-dot.up   { background: ${RED}; }
-      .sc-dot.down { background: ${GREEN}; }
+      .sc-col-left { display: flex; align-items: flex-start; }
       .sc-text { display: flex; flex-direction: column; min-width: 0; }
-      .sc-level { font-size: 1.05rem; font-weight: 700; color: ${INK}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .sc-change { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sc-level { font-size: 1.05rem; font-weight: normal; color: ${INK}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sc-change { font-size: 0.85rem; font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sc-change.up   { color: ${RED}; }
       .sc-change.down { color: ${GREEN}; }
       .sc-change.flat { color: ${INK}; }
@@ -78,7 +77,7 @@
       .sc-slider-label { font-size: 0.68rem; color: ${MUTED}; text-align: center; margin-top: 4px; overflow-wrap: break-word; }
 
       .sc-note { text-align: center; font-size: 0.8rem; color: ${MUTED}; padding: 16px 4px; }
-      .sc-cards-wrap { display: flex; flex-direction: column; gap: 14px; }
+      .sc-cards-wrap { display: flex; flex-direction: column; gap: 14px; max-width: 100%; }
 
       @media (max-width: 480px) {
         .sc-row { column-gap: 8px; }
@@ -288,7 +287,6 @@
       <div class="sc-title">${esc(card.label || card.cardID)}</div>
       <div class="sc-row">
         <div class="sc-col sc-col-left">
-          <div class="sc-dot ${changeState}"></div>
           <div class="sc-text">
             <div class="sc-level">${esc(card.levelDisplay)}</div>
             <div class="sc-change ${changeState}">${esc(card.changeDisplay)}</div>
