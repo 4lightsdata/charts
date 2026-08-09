@@ -63,8 +63,8 @@
 
       /* right: range slider */
       .sc-col-range { display: flex; flex-direction: column; align-items: center; }
-      .sc-range-labels-row { display: flex; justify-content: space-between; width: 100%; font-size: 0.68rem; color: ${MUTED}; gap: 4px; }
-      .sc-range-labels-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .sc-range-max { width: 100%; text-align: right; font-size: 0.68rem; color: ${MUTED}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .sc-range-min { width: 100%; text-align: left; font-size: 0.68rem; color: ${MUTED}; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .sc-range-line-wrap { position: relative; width: 100%; display: flex; align-items: center; height: 14px; margin: 6px 0; }
       .sc-range-line { width: 100%; height: 0; border-top: 2px dashed #d8dade; }
       .sc-range-dot {
@@ -298,11 +298,12 @@
           <div class="sc-trend-label">${esc(card.trendLabel)}</div>
         </div>
         <div class="sc-col sc-col-range">
-          <div class="sc-range-labels-row"><span>${esc(card.histMinDisplay)}</span><span>${esc(card.histMaxDisplay)}</span></div>
+          <div class="sc-range-max">${esc(card.histMaxDisplay)}</div>
           <div class="sc-range-line-wrap">
             <div class="sc-range-line"></div>
             <div class="sc-range-dot ${changeState}" style="left:${pct}%"></div>
           </div>
+          <div class="sc-range-min">${esc(card.histMinDisplay)}</div>
           <div class="sc-slider-label">${esc(card.sliderLabel)}</div>
         </div>
       </div>
