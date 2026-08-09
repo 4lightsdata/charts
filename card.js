@@ -1,14 +1,14 @@
 (function () {
   const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTyHCIpuggmnT48JhvbjLixeB_-VOEaWNkBUDssKIyM_JFPz52tiN_aUi-4UBOvGo9sPbwdvJ-7XSuZ/pub?gid=1860034981&single=true&output=csv';
-  const CACHE_KEY = 'stressCards_csv_v1';
+  const CACHE_KEY = 'stressCards_csv_v2';
   const CACHE_TTL_MS = 45000;
   const FETCH_TIMEOUT_MS = 8000;
 
-  const GREEN = '#089981';
   const RED = '#f23645';
+  const GREEN = '#089981';
   const INK = '#111318';
   const MUTED = '#6b7280';
-  const PILL_BG = '#f0f1f3';
+  const CARD_BG = '#f7f8fa'; // subtle light grey card background
 
   // ---------- styles (injected once per page) ----------
   function injectStyles() {
@@ -17,45 +17,73 @@
     style.id = 'stress-card-styles';
     style.textContent = `
       .sc-card {
-        background: #fff;
-        border-radius: 999px;
-        padding: 18px 32px 14px 32px;
-        display: grid;
-        grid-template-columns: minmax(100px, 130px) 1fr minmax(84px, 120px);
-        grid-template-rows: auto auto;
-        align-items: center;
+        background: ${CARD_BG};
+        border-radius: 28px;
+        padding: 20px 22px 16px 22px;
         width: 100%;
-        max-width: 520px;
+        max-width: 560px;
         box-sizing: border-box;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
       }
-      .sc-left { display:flex; align-items:center; gap:8px; min-width:0; }
-      .sc-dot { width:14px; height:14px; border-radius:50%; background:${INK}; flex-shrink:0; }
-      .sc-dot.down { background:${GREEN}; }
-      .sc-dot.up { background:${RED}; }
-      .sc-text { display:flex; flex-direction:column; line-height:1.15; min-width:0; }
-      .sc-level { font-size:1.05rem; font-weight:700; color:${INK}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-      .sc-change { font-size:0.85rem; font-weight:600; white-space:nowrap; }
-      .sc-change.down { color:${GREEN}; }
-      .sc-change.up { color:${RED}; }
-      .sc-change.flat { color:${MUTED}; }
-      .sc-sparkline { padding:0 8px; min-width:0; }
-      .sc-sparkline svg { display:block; width:100%; height:60px; }
-      .sc-range { display:flex; flex-direction:column; align-items:center; position:relative; height:60px; justify-content:center; }
-      .sc-range-line-wrap { position:relative; width:100%; display:flex; align-items:center; }
-      .sc-range-line { width:100%; height:0; border-top:2px dashed #d8dade; }
-      .sc-range-dot { position:absolute; width:11px; height:11px; background:${INK}; border-radius:50%; top:50%; transform:translate(-50%,-50%); box-shadow:0 0 0 3px rgba(17,19,24,0.08); }
-      .sc-range-dot.down { background:${GREEN}; box-shadow:0 0 0 3px rgba(8,153,129,0.15); }
-      .sc-range-dot.up { background:${RED}; box-shadow:0 0 0 3px rgba(242,54,69,0.15); }
-      .sc-range-labels { width:100%; display:flex; justify-content:space-between; font-size:0.7rem; color:${MUTED}; margin-top:4px; }
-      .sc-range-max-label { position:absolute; top:2px; right:4px; font-size:0.7rem; color:${MUTED}; }
-      .sc-label { grid-column:1/4; text-align:center; font-size:0.7rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:${MUTED}; padding-top:8px; border-top:1px solid #f0f1f3; margin-top:6px; }
-      .sc-note { grid-column:1/4; text-align:center; font-size:0.8rem; color:${MUTED}; padding:16px 4px; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-      .sc-cards-wrap { display:flex; flex-direction:column; gap:14px; }
+      .sc-title {
+        text-align: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: ${INK};
+        overflow-wrap: break-word;
+      }
+      .sc-row {
+        display: grid;
+        grid-template-columns: 30% 40% 30%;
+        column-gap: 14px;
+        align-items: start;
+      }
+      .sc-col { min-width: 0; overflow: hidden; box-sizing: border-box; }
+
+      /* left: level / change */
+      .sc-col-left { display: flex; align-items: flex-start; gap: 8px; }
+      .sc-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; background: ${INK}; }
+      .sc-dot.up   { background: ${RED}; }
+      .sc-dot.down { background: ${GREEN}; }
+      .sc-text { display: flex; flex-direction: column; min-width: 0; }
+      .sc-level { font-size: 1.05rem; font-weight: 700; color: ${INK}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sc-change { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sc-change.up   { color: ${RED}; }
+      .sc-change.down { color: ${GREEN}; }
+      .sc-change.flat { color: ${INK}; }
+      .sc-period { font-size: 0.7rem; color: ${MUTED}; margin-top: 2px; }
+
+      /* middle: sparkline */
+      .sc-col-graph { display: flex; flex-direction: column; }
+      .sc-sparkline svg { display: block; width: 100%; height: 56px; }
+      .sc-trend-label { font-size: 0.68rem; color: ${MUTED}; text-align: center; margin-top: 4px; overflow-wrap: break-word; }
+
+      /* right: range slider */
+      .sc-col-range { display: flex; flex-direction: column; align-items: center; }
+      .sc-range-labels-row { display: flex; justify-content: space-between; width: 100%; font-size: 0.68rem; color: ${MUTED}; gap: 4px; }
+      .sc-range-labels-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .sc-range-line-wrap { position: relative; width: 100%; display: flex; align-items: center; height: 14px; margin: 6px 0; }
+      .sc-range-line { width: 100%; height: 0; border-top: 2px dashed #d8dade; }
+      .sc-range-dot {
+        position: absolute; width: 11px; height: 11px; border-radius: 50%;
+        top: 50%; transform: translate(-50%, -50%); background: ${INK};
+        box-shadow: 0 0 0 3px rgba(17,19,24,0.08);
+      }
+      .sc-range-dot.up   { background: ${RED};   box-shadow: 0 0 0 3px rgba(242,54,69,0.15); }
+      .sc-range-dot.down { background: ${GREEN}; box-shadow: 0 0 0 3px rgba(8,153,129,0.15); }
+      .sc-slider-label { font-size: 0.68rem; color: ${MUTED}; text-align: center; margin-top: 4px; overflow-wrap: break-word; }
+
+      .sc-note { text-align: center; font-size: 0.8rem; color: ${MUTED}; padding: 16px 4px; }
+      .sc-cards-wrap { display: flex; flex-direction: column; gap: 14px; }
+
       @media (max-width: 480px) {
-        .sc-card { grid-template-columns: 92px 1fr 80px; padding:14px 22px 10px 22px; }
-        .sc-level { font-size:0.95rem; }
+        .sc-row { column-gap: 8px; }
+        .sc-level { font-size: 0.9rem; }
+        .sc-card { padding: 16px 14px 12px 14px; }
       }
     `;
     document.head.appendChild(style);
@@ -135,37 +163,61 @@
     }
   }
 
-  // ---------- rows -> card models ----------
+  // ---------- rows -> card models (new schema) ----------
   function rowsToCards(rows) {
     if (!rows.length) return [];
     const header = rows[0];
-    const col = name => header.findIndex(h => h.trim() === name.trim());
+    const col = name => header.findIndex(h => h.trim().toLowerCase() === name.trim().toLowerCase());
     const idx = {
-      cardID: col('CardID'), label: col('Label'), unit: col('Unit'),
-      level: col('Level'), changeVal: col('ChangeVal'), periodLabel: col('PeriodLabel'),
-      histMin: col('HistMin'), histMax: col('HistMax'), percentile: col('Percentile')
+      cardID:          col('CardID'),
+      label:           col('Label'),
+      levelDisplay:    col('LevelDisplay'),
+      levelVal:        col('LevelVal'),
+      changeDisplay:   col('ChangeDisplay'),
+      changeVal:       col('ChangeVal'),
+      periodLabel:     col('PeriodLabel'),
+      trendColor:      col('TrendColor'),
+      trendLabel:      col('TrendLabel'),
+      histMinDisplay:  col('HistMinDisplay'),
+      histMaxDisplay:  col('HistMaxDisplay'),
+      histMin:         col('HistMin'),
+      histMax:         col('HistMax'),
+      relativePosition:col('RelativePosition'),
+      sliderLabel:     col('SliderLabel')
     };
-    const sparkStart = idx.percentile + 2; // skip the blank column after Percentile
+    // Sparkline values start one column after the last recognized metadata
+    // column (there's a blank spacer column, then dated values).
+    const knownIdxs = Object.values(idx).filter(i => i >= 0);
+    const sparkStart = (knownIdxs.length ? Math.max(...knownIdxs) : 0) + 2;
 
     const cards = [];
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
-      if (!row[idx.cardID] || !row[idx.cardID].trim()) continue;
+      if (idx.cardID < 0 || !row[idx.cardID] || !row[idx.cardID].trim()) continue;
+
+      const get = key => (idx[key] >= 0 && row[idx[key]] !== undefined) ? row[idx[key]].trim() : '';
+      const getNum = key => parseFloat(get(key));
 
       const sparkValues = row.slice(sparkStart)
         .map(v => parseFloat(v))
         .filter(v => Number.isFinite(v));
 
       cards.push({
-        cardID:      row[idx.cardID].trim(),
-        label:       (row[idx.label] || '').trim(),
-        unit:        (row[idx.unit] || '').trim(),
-        level:       parseFloat(row[idx.level]),
-        changeVal:   parseFloat(row[idx.changeVal]),
-        periodLabel: (row[idx.periodLabel] || '').trim(),
-        histMin:     parseFloat(row[idx.histMin]),
-        histMax:     parseFloat(row[idx.histMax]),
-        percentile:  parseFloat(row[idx.percentile]),
+        cardID:           get('cardID'),
+        label:            get('label'),
+        levelDisplay:     get('levelDisplay'),
+        levelVal:         getNum('levelVal'),
+        changeDisplay:    get('changeDisplay'),
+        changeVal:        getNum('changeVal'),
+        periodLabel:      get('periodLabel'),
+        trendColor:       getNum('trendColor'),
+        trendLabel:       get('trendLabel'),
+        histMinDisplay:   get('histMinDisplay'),
+        histMaxDisplay:   get('histMaxDisplay'),
+        histMin:          getNum('histMin'),
+        histMax:          getNum('histMax'),
+        relativePosition: get('relativePosition'),
+        sliderLabel:      get('sliderLabel'),
         sparkValues
       });
     }
@@ -178,10 +230,24 @@
   }
 
   // ---------- rendering helpers ----------
-  function fmt(n, digits = 2) { return Number.isFinite(n) ? n.toFixed(digits) : '—'; }
-  function fmtPlain(n) { return Number.isFinite(n) ? n : '—'; }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
 
-  function buildSparklineSVG(values, colorClass) {
+  // Find the marker position within a string like "---o------" and return
+  // its position as a 0-100 percentage along the string.
+  function relativePositionPercent(posStr) {
+    if (!posStr) return 50;
+    const chars = Array.from(posStr);
+    if (chars.length < 2) return 50;
+    const idx = chars.findIndex(ch => ch !== '-' && ch.trim() !== '');
+    if (idx === -1) return 50;
+    return Math.min(100, Math.max(0, (idx / (chars.length - 1)) * 100));
+  }
+
+  function buildSparklineSVG(values, colorClass, invertArea) {
     if (!values || values.length < 2) return '';
     const w = 200, h = 60, pad = 4;
     const min = Math.min(...values), max = Math.max(...values);
@@ -192,12 +258,13 @@
       return `${x},${y}`;
     });
     const polyline = pts.join(' ');
-    const areaClose = `${pts[pts.length - 1].split(',')[0]},${h} ${pad},${h}`;
-    const color = colorClass === 'up' ? RED : GREEN;
+    const closeY = invertArea ? pad : h; // shading above the line for negative levels
+    const areaClose = `${pts[pts.length - 1].split(',')[0]},${closeY} ${pad},${closeY}`;
+    const color = colorClass === 'red' ? RED : (colorClass === 'green' ? GREEN : MUTED);
     const gid = 'sg' + Math.random().toString(36).slice(2);
     return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="${color}" stop-opacity="0.35"/>
+        <stop offset="0%" stop-color="${color}" stop-opacity="0.28"/>
         <stop offset="100%" stop-color="${color}" stop-opacity="0.03"/>
       </linearGradient></defs>
       <polygon points="${polyline} ${areaClose}" fill="url(#${gid})"/>
@@ -206,40 +273,46 @@
   }
 
   function buildCardHTML(card) {
-    const hasChange = Number.isFinite(card.changeVal);
-    const isDown = hasChange ? card.changeVal <= 0 : null;
-    const changeClass = !hasChange ? 'flat' : (isDown ? 'down' : 'up');
-    const arrow = !hasChange ? '' : (isDown ? '↓ ' : '↑ ');
-    const changeDisplay = hasChange
-      ? `${arrow}${fmt(Math.abs(card.changeVal))}${card.periodLabel ? ` (${card.periodLabel})` : ''}`
-      : 'change unavailable';
-    const pct = Number.isFinite(card.percentile) ? Math.min(100, Math.max(0, card.percentile)) : 50;
-    const sparkSVG = buildSparklineSVG(card.sparkValues, changeClass);
+    const changeVal = card.changeVal;
+    const changeState = !Number.isFinite(changeVal) ? 'flat' : (changeVal > 0 ? 'up' : (changeVal < 0 ? 'down' : 'flat'));
+
+    const trendColor = card.trendColor;
+    const sparkColorClass = !Number.isFinite(trendColor) ? 'neutral' : (trendColor > 0 ? 'red' : 'green');
+    const invertArea = Number.isFinite(card.levelVal) && card.levelVal < 0;
+    const sparkSVG = buildSparklineSVG(card.sparkValues, sparkColorClass, invertArea);
+
+    const pct = relativePositionPercent(card.relativePosition);
 
     return `
     <div class="sc-card">
-      <div class="sc-left">
-        <div class="sc-dot ${changeClass}"></div>
-        <div class="sc-text">
-          <div class="sc-level">${fmtPlain(card.level)}</div>
-          <div class="sc-change ${changeClass}">${changeDisplay}</div>
+      <div class="sc-title">${esc(card.label || card.cardID)}</div>
+      <div class="sc-row">
+        <div class="sc-col sc-col-left">
+          <div class="sc-dot ${changeState}"></div>
+          <div class="sc-text">
+            <div class="sc-level">${esc(card.levelDisplay)}</div>
+            <div class="sc-change ${changeState}">${esc(card.changeDisplay)}</div>
+            <div class="sc-period">${esc(card.periodLabel)}</div>
+          </div>
+        </div>
+        <div class="sc-col sc-col-graph">
+          <div class="sc-sparkline">${sparkSVG}</div>
+          <div class="sc-trend-label">${esc(card.trendLabel)}</div>
+        </div>
+        <div class="sc-col sc-col-range">
+          <div class="sc-range-labels-row"><span>${esc(card.histMinDisplay)}</span><span>${esc(card.histMaxDisplay)}</span></div>
+          <div class="sc-range-line-wrap">
+            <div class="sc-range-line"></div>
+            <div class="sc-range-dot ${changeState}" style="left:${pct}%"></div>
+          </div>
+          <div class="sc-slider-label">${esc(card.sliderLabel)}</div>
         </div>
       </div>
-      <div class="sc-sparkline">${sparkSVG}</div>
-      <div class="sc-range">
-        <div class="sc-range-max-label">${fmtPlain(card.histMax)}</div>
-        <div class="sc-range-line-wrap">
-          <div class="sc-range-line"></div>
-          <div class="sc-range-dot ${changeClass}" style="left:${pct}%"></div>
-        </div>
-        <div class="sc-range-labels"><span>${fmtPlain(card.histMin)}</span></div>
-      </div>
-      <div class="sc-label">${card.label || card.cardID}</div>
     </div>`;
   }
 
   function buildNoDataHTML(label) {
-    return `<div class="sc-card"><div class="sc-note">"${label}" data unavailable right now</div></div>`;
+    return `<div class="sc-card"><div class="sc-note">"${esc(label)}" data unavailable right now</div></div>`;
   }
 
   // ---------- entry points ----------
@@ -282,7 +355,7 @@
     }
   })();
 
-  const exportsObj = { renderSingleCard, renderAllCards, getCards, parseCSV, rowsToCards, buildCardHTML, buildNoDataHTML };
+  const exportsObj = { renderSingleCard, renderAllCards, getCards, parseCSV, rowsToCards, buildCardHTML, buildNoDataHTML, relativePositionPercent };
   if (typeof window !== 'undefined') window.StressCards = exportsObj;
   if (typeof module !== 'undefined' && module.exports) module.exports = exportsObj;
 })();
