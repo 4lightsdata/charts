@@ -19,7 +19,7 @@
       html, body { max-width: 100%; overflow-x: hidden; }
       .sc-card {
         background: ${CARD_BG};
-        border-radius: 32px;
+        border-radius: 36px;
         padding: 10px;
         width: 100%;
         max-width: 560px;
@@ -51,7 +51,7 @@
       /* left: level / change */
       .sc-col-left { grid-column: 1; display: flex; align-items: flex-start; }
       .sc-text { display: flex; flex-direction: column; min-width: 0; }
-      .sc-level { font-size: 1.5rem; font-weight: normal; color: ${INK}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sc-level { font-size: 1.9rem; font-weight: normal; color: ${INK}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sc-change { font-size: 0.85rem; font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sc-change.up   { color: ${RED}; }
       .sc-change.down { color: ${GREEN}; }
