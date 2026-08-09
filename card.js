@@ -20,7 +20,7 @@
       .sc-card {
         background: ${CARD_BG};
         border-radius: 32px;
-        padding: 20px 22px 16px 22px;
+        padding: 5px;
         width: 100%;
         max-width: 560px;
         box-sizing: border-box;
@@ -41,15 +41,15 @@
       }
       .sc-row {
         display: grid;
-        grid-template-columns: 25% 35% 40%;
-        column-gap: 14px;
+        grid-template-columns: 25% 5% 35% 5% 30%;
+        column-gap: 0;
         align-items: start;
         min-width: 0;
       }
       .sc-col { min-width: 0; box-sizing: border-box; max-width: 100%; }
 
       /* left: level / change */
-      .sc-col-left { display: flex; align-items: flex-start; }
+      .sc-col-left { grid-column: 1; display: flex; align-items: flex-start; }
       .sc-text { display: flex; flex-direction: column; min-width: 0; }
       .sc-level { font-size: 1.05rem; font-weight: normal; color: ${INK}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sc-change { font-size: 0.85rem; font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -59,12 +59,12 @@
       .sc-period { font-size: 0.7rem; color: ${MUTED}; margin-top: 2px; }
 
       /* middle: sparkline */
-      .sc-col-graph { display: flex; flex-direction: column; }
+      .sc-col-graph { grid-column: 3; display: flex; flex-direction: column; }
       .sc-sparkline svg { display: block; width: 100%; height: 56px; }
       .sc-trend-label { font-size: 0.68rem; color: ${MUTED}; text-align: center; margin-top: 4px; overflow-wrap: break-word; }
 
       /* right: range slider */
-      .sc-col-range { display: flex; flex-direction: column; align-items: center; }
+      .sc-col-range { grid-column: 5; display: flex; flex-direction: column; align-items: center; }
       .sc-range-max { width: 100%; text-align: right; font-size: 0.68rem; color: ${MUTED}; overflow-wrap: break-word; }
       .sc-range-min { width: 100%; text-align: left; font-size: 0.68rem; color: ${MUTED}; margin-top: 2px; overflow-wrap: break-word; }
       .sc-range-line-wrap { position: relative; width: 100%; display: flex; align-items: center; height: 14px; margin: 6px 0; }
@@ -80,9 +80,7 @@
       .sc-cards-wrap { display: flex; flex-direction: column; gap: 14px; max-width: 100%; }
 
       @media (max-width: 480px) {
-        .sc-row { column-gap: 8px; }
         .sc-level { font-size: 0.9rem; }
-        .sc-card { padding: 16px 14px 12px 14px; }
       }
     `;
     document.head.appendChild(style);
