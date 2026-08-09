@@ -19,7 +19,7 @@
       html, body { max-width: 100%; overflow-x: hidden; }
       .sc-card {
         background: ${CARD_BG};
-        border-radius: 28px;
+        border-radius: 32px;
         padding: 20px 22px 16px 22px;
         width: 100%;
         max-width: 560px;
@@ -44,7 +44,7 @@
         column-gap: 14px;
         align-items: start;
       }
-      .sc-col { min-width: 0; overflow: hidden; box-sizing: border-box; max-width: 100%; }
+      .sc-col { min-width: 0; box-sizing: border-box; max-width: 100%; }
 
       /* left: level / change */
       .sc-col-left { display: flex; align-items: flex-start; }
@@ -66,7 +66,7 @@
       .sc-range-max { width: 100%; text-align: right; font-size: 0.68rem; color: ${MUTED}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .sc-range-min { width: 100%; text-align: left; font-size: 0.68rem; color: ${MUTED}; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .sc-range-line-wrap { position: relative; width: 100%; display: flex; align-items: center; height: 14px; margin: 6px 0; }
-      .sc-range-line { width: 100%; height: 0; border-top: 2px dashed #d8dade; }
+      .sc-range-line { width: 100%; height: 0; border-top: 2px solid #000; }
       .sc-range-dot {
         position: absolute; width: 11px; height: 11px; border-radius: 50%;
         top: 50%; transform: translate(-50%, -50%); background: ${INK};
