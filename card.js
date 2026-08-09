@@ -40,7 +40,7 @@
       }
       .sc-row {
         display: grid;
-        grid-template-columns: 30% 40% 30%;
+        grid-template-columns: 25% 35% 40%;
         column-gap: 14px;
         align-items: start;
       }
