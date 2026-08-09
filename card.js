@@ -20,7 +20,7 @@
       .sc-card {
         background: ${CARD_BG};
         border-radius: 32px;
-        padding: 5px;
+        padding: 10px;
         width: 100%;
         max-width: 560px;
         box-sizing: border-box;
@@ -246,7 +246,7 @@
 
   function buildSparklineSVG(values, colorClass, invertArea) {
     if (!values || values.length < 2) return '';
-    const w = 200, h = 60, pad = 4;
+    const w = 200, h = 60, pad = 1;
     const min = Math.min(...values), max = Math.max(...values);
     const range = max - min || 1;
     const pts = values.map((v, i) => {
